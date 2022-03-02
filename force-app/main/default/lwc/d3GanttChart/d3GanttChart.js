@@ -32,6 +32,7 @@ export default class D3GanttChart extends LightningElement {
     }
 
     initD3(){
+        // chart set up parameters
         const width = this.svgWidth;
         const height = this.svgHeight;
         const margin = {left: 40, top: 30, right: 40, bottom: 50}
@@ -45,6 +46,7 @@ export default class D3GanttChart extends LightningElement {
         }
 
 
+        // create container for gantt chart that includes margins and responsiveness
         const svg = d3.select(this.template.querySelector('div.d3'))
             .append('svg')
             .style('padding', marginRatio.top + ' ' + marginRatio.right + ' ' 
@@ -54,7 +56,7 @@ export default class D3GanttChart extends LightningElement {
             .attr('viewBox', [0, 0, this.svgWidth + margin.left + margin.right, this.svgHeight + margin.top + margin.bottom])
             .attr("style", "width: 100%; height: auto; height: intrinsic;");
 
-        // create an array of sample data
+        // sample data to display on chart
         let data = [
             {
                 meeting: "1st Meeting",
@@ -100,19 +102,23 @@ export default class D3GanttChart extends LightningElement {
             },
         ];
 
+        // get array of categories to use in colorScale
         var categories = new Array();
 
         for (let i = 0; i < data.length; i++) {
             categories.push(data[i].status);
         }
 
+        // make sure array contains only unique categories
         categories = checkUnique(categories);
 
+        // create color scale based off of the categories array so each status will have a different color
         var colorScale = d3.scaleLinear()
             .domain([0, categories.length])
             .range(["#00B9FA", "#F95002"])
             .interpolate(d3.interpolateHcl);
         
+        // create scale for the x-axis using sample data and add to svg tag
         var timeScale = d3.scaleBand()
             .domain(d3.map(data, function(d) { return d.date }))
             .range([0, width])
@@ -132,6 +138,7 @@ export default class D3GanttChart extends LightningElement {
             .attr("transform", "translate(0," + (height) + ")")
             .call(xAxis)
 
+        // set up and add the y scale for the y-axis
         const yScale = d3.scaleLinear().domain([0, data.length]).range([height - margin.top, 0]);
 
         grid.append("g")
@@ -145,35 +152,8 @@ export default class D3GanttChart extends LightningElement {
             })
             .ticks(data.length))
             .call(grid => grid.select(".domain").remove());
-            
         
-        var projects = svg
-            .append('g')
-            .attr("transform", "translate(" + margin.left + ", " + 0 + ")")
-            .selectAll("this_is_empty")
-            .data(data)
-            .enter();
-
-        var rects = projects
-            .append("rect")
-            .attr("rx", 3)
-            .attr("ry", 3)
-            .attr("x", (d,i) => timeScale(d.date))
-            .attr("y", (d,i) => yScale(i))
-            .attr("width", timeScale.bandwidth())
-            .attr("height", 30)
-            .attr("stroke", "none")
-            .attr("fill", d => d3.rgb(colorScale(categories.indexOf(d.status))));
-        
-        var rectText = projects.append("text")
-            .text(d => d.label)
-            .attr("x", d => timeScale(d.date) + timeScale.bandwidth()/2)
-            .attr("y", (d,i) => yScale(i) + 20)
-            .attr("font-size", 12)
-            .attr("text-anchor", "middle")
-            .attr("text-height", 30)
-            .attr("fill", "#fff")
-
+        // create highlighted rectangles to act as a container for the task nodes
         var highlightRects = svg.append("g")
             .selectAll("rect")
             .data(data)
@@ -185,13 +165,99 @@ export default class D3GanttChart extends LightningElement {
             .attr("height", 40)
             .attr("stroke", "none")
             .attr("fill",  d => d3.rgb(colorScale(categories.indexOf(d.status))))
-            .attr("opacity", 0.2);
+            .attr("opacity", 0.2)
+            
+        // group the tasks in data together
+        var projects = svg
+            .append('g')
+            .attr("transform", "translate(" + margin.left + ", " + 0 + ")")
+            .selectAll("this_is_empty")
+            .data(data)
+            .enter()
+
+        // create rectangles for each task and chart them
+        var rects = projects
+            .append("rect")
+            .attr("rx", 3)
+            .attr("ry", 3)
+            .attr("x", (d,i) => timeScale(d.date))
+            .attr("y", (d,i) => yScale(i))
+            .attr("width", timeScale.bandwidth())
+            .attr("height", 30)
+            .attr("stroke", "none")
+            .attr("fill", d => d3.rgb(colorScale(categories.indexOf(d.status))))
+            .on("mouseover", onMouseOverRect)
+            //.on("mousemove", onMouseMove)
+            .on("mouseout", onMouseOut);
+        
+        // add text to each of the created rectangles with the task name
+        var rectText = projects.append("text")
+            .text(d => d.label)
+            .attr("x", d => timeScale(d.date) + timeScale.bandwidth()/2)
+            .attr("y", (d,i) => yScale(i) + 20)
+            .attr("font-size", 12)
+            .attr("text-anchor", "middle")
+            .attr("text-height", 30)
+            .attr("fill", "#fff")
+            .on("mouseover", onMouseOverText)
+            .on("mouseout", onMouseOut);
 
 
+        // tool tip set up for future manipulation
+        const tooltip = d3.select(this.template.querySelector('.d3'))
+            .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0)
+            .style('font-size', '10px');
+
+        // tool tip event when mouse hovers over any rectangle
+        function onMouseOverRect (e, d) {
+            console.log("rect y: " + this.y.animVal.value)
+            tooltip
+                .transition()
+                .duration(100)
+                .style("opacity", .9);
+            tooltip
+                .html("Task: " + d.label + "</br>" 
+                    + "Date: " + d.date + "</br>" 
+                    + "Type: " + d.type + "</br>"
+                    + "Meeting: " + d.meeting + "</br>"
+                    + "Status: " + d.status)
+                .style("left", (this.x.animVal.value + this.width.animVal.value/2)*.81 + "px")
+                .style("top", (this.y.animVal.value + 25)*.81 + "px")
+                .style("display", "block")
+        }
+
+        // tool tip event when mouse hovers over text in a rectangle
+        function onMouseOverText (e, d) {
+            tooltip
+                .transition()
+                .duration(100)
+                .style("opacity", .9);
+            tooltip
+                .html("Task: " + d.label + "</br>" 
+                    + "Date: " + d.date + "</br>" 
+                    + "Type: " + d.type + "</br>"
+                    + "Meeting: " + d.meeting + "</br>"
+                    + "Status: " + d.status)
+                .style("left", (this.x.animVal.getItem(this).value)*.81 + "px")
+                .style("top", (this.y.animVal.getItem(this).value + 5)*.81 + "px")
+                .style("display", "block")
+        }
+
+        function onMouseOut () {
+            tooltip
+                .transition()
+                .duration(200)
+                .style('opacity', 0)
+        }
+
+
+        // function to ensure array contains only unique values
         function checkUnique(arr) {
             var hash = {}, result = [];
             for ( var i = 0, l = arr.length; i < l; ++i ) {
-                if ( !hash.hasOwnProperty(arr[i]) ) { //it works with objects! in FF, at least
+                if ( !hash.hasOwnProperty(arr[i]) ) {
                     hash[ arr[i] ] = true;
                     result.push(arr[i]);
                 }

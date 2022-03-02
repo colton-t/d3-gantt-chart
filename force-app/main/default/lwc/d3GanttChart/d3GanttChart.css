@@ -1,4 +1,16 @@
 .chart-container {
     height: 500;
     width: 700;
+    position: relative;
+}
+
+.tooltip {
+    position: absolute;
+    background-color: rgb(80, 72, 85);
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    min-width: 100px;
+    text-align: center;
+    color: white;
 }
