@@ -8,7 +8,7 @@ export default class D3GanttChart extends LightningElement {
     d3Init = false;
 
     svgWidth = 700;
-    svgHeight = 300;
+    svgHeight = 350;
 
     renderedCallback() {
         if(this.d3Init)
@@ -54,51 +54,58 @@ export default class D3GanttChart extends LightningElement {
             .attr('width', this.svgWidth)
             .attr('height', this.svgHeight)
             .attr('viewBox', [0, 0, this.svgWidth + margin.left + margin.right, this.svgHeight + margin.top + margin.bottom])
-            .attr("style", "width: 100%; height: auto; height: intrinsic;");
+            .attr("style", "width: 100%; max-width: 700px; height: auto; height: intrinsic;");
 
         // sample data to display on chart
         let data = [
             {
-                meeting: "1st Meeting",
+                meeting: "Approval Meeting",
                 type: "project",
                 date: "03/01/2022",
-                label: "Project One",
+                label: "Project Alpha",
                 status: "approved"
             },
             {
-                meeting: "1st Meeting",
+                meeting: "Review Meeting",
                 type: "project",
                 date: "03/02/2022",
-                label: "Project Two",
-                status: "voting_round_1"
+                label: "Project Beta",
+                status: "proposed"
             },
             {
-                meeting: "1st Meeting",
+                meeting: "Project Review",
                 type: "project",
                 date: "03/03/2022",
-                label: "Project Three",
-                status: "voting_round_2"
+                label: "Project Charlie",
+                status: "review"
             },
             {
-                meeting: "1st Meeting",
+                meeting: "Reflection",
                 type: "project",
-                date: "03/04/2022",
-                label: "Project Four",
-                status: "voting_round_3"
+                date: "03/02/2022",
+                label: "Project Delta",
+                status: "approved"
             },
             {
-                meeting: "1st Meeting",
+                meeting: "Planning Greet",
+                type: "event",
+                date: "03/04/2022",
+                label: "Company Event",
+                status: "in-process"
+            },
+            {
+                meeting: "Onboarding",
                 type: "project",
                 date: "03/06/2022",
-                label: "Project Five",
+                label: "Project Echo",
                 status: "pending"
             },
             {
-                meeting: "1st Meeting",
+                meeting: "Final Meeting",
                 type: "project",
                 date: "03/01/2022",
                 label: "Project Zeta",
-                status: "pending"
+                status: "rejected"
             },
         ];
 
@@ -212,17 +219,12 @@ export default class D3GanttChart extends LightningElement {
 
         // tool tip event when mouse hovers over any rectangle
         function onMouseOverRect (e, d) {
-            console.log("rect y: " + this.y.animVal.value)
             tooltip
                 .transition()
                 .duration(100)
                 .style("opacity", .9);
             tooltip
-                .html("Task: " + d.label + "</br>" 
-                    + "Date: " + d.date + "</br>" 
-                    + "Type: " + d.type + "</br>"
-                    + "Meeting: " + d.meeting + "</br>"
-                    + "Status: " + d.status)
+                .html(`<div>Task: ${d.label}</br>Date: ${d.date}</br>Type: ${d.type}</br>Meeting: ${d.meeting}</br>Status: ${d.status}</div`)
                 .style("left", (this.x.animVal.value + this.width.animVal.value/2)*.81 + "px")
                 .style("top", (this.y.animVal.value + 25)*.81 + "px")
                 .style("display", "block")
@@ -235,11 +237,7 @@ export default class D3GanttChart extends LightningElement {
                 .duration(100)
                 .style("opacity", .9);
             tooltip
-                .html("Task: " + d.label + "</br>" 
-                    + "Date: " + d.date + "</br>" 
-                    + "Type: " + d.type + "</br>"
-                    + "Meeting: " + d.meeting + "</br>"
-                    + "Status: " + d.status)
+                .html(`<div>Task: ${d.label}</br>Date: ${d.date}</br>Type: ${d.type}</br>Meeting: ${d.meeting}</br>Status: ${d.status}</div`)
                 .style("left", (this.x.animVal.getItem(this).value)*.81 + "px")
                 .style("top", (this.y.animVal.getItem(this).value + 5)*.81 + "px")
                 .style("display", "block")
