@@ -1,18 +1,8 @@
-# Salesforce DX Project: Next Steps
+# Gantt Chart in LWC using D3 project
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+This project creates a gantt chart in a lightntin web component using the third-party JavaScript Library, D3. The chart represents a calendar that is populated by tasks on specific dates that includes color organization, tooltips on hover, and a fully responsive chart. 
 
-## How Do You Plan to Deploy Your Changes?
+## Gantt Chart Demo Photos
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
-
-## Configure Your Salesforce DX Project
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+![GanttDemo1](https://user-images.githubusercontent.com/62946799/156408385-b3439f64-9813-4e06-9daf-7d99a722d43c.png)
+![GanttDemo2](https://user-images.githubusercontent.com/62946799/156408389-7fe85ee6-f64d-46bd-a5fc-c2fd11cb09e9.png)
